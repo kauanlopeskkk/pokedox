@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1d2671, #c33764);
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+h1, h2 {
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #ffcc00;
+  color: black;
+  border: none;
+  padding: 10px 15px;
+  margin: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #ffaa00;
+  transform: scale(1.05);
+}
+
+input {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: rgba(255, 255, 255, 0.1);
+  margin: 10px auto;
+  padding: 10px;
+  width: 300px;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  transition: 0.3s;
+}
+
+li:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: rgba(0,0,0,0.3);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+
+  </style>
+  <title>Pokémon App</title>
+</head>
+<body>
+
+<h1>Lista de Pokémons</h1>
+
+<button onclick="carregarPokemons()">Carregar Pokémons</button>
+
+<ul id="lista"></ul>
+
+<h2>Adicionar Pokémon</h2>
+
+<input id="nome" placeholder="Nome">
+<input id="tipo" placeholder="Tipo">
+<input id="nivel" type="number" placeholder="Nível">
+<input id="captura" type="number" placeholder="Captura">
+
+<button onclick="adicionarPokemon()">Adicionar</button>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+function authHeader() {
+  return {
+    "Authorization": "Basic " + btoa("kauan:admin"),
+    "Content-Type": "application/json"
+  };
+}
+
+async function carregarPokemons() {
+  const res = await fetch(API + "/Pokemons", {
+    headers: authHeader()
+  });
+
+  const data = await res.json();
+
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  data.forEach(p => {
+    const li = document.createElement("li");
+    li.innerText = `${p.nome} - ${p.tipo} - nível ${p.nivel}`;
+    lista.appendChild(li);
+  });
+}
+
+async function adicionarPokemon() {
+  const pokemon = {
+    nome: document.getElementById("nome").value,
+    tipo: document.getElementById("tipo").value,
+    nivel: parseFloat(document.getElementById("nivel").value),
+    captura: parseFloat(document.getElementById("captura").value)
+  };
+
+  await fetch(API + "/Pokemons", {
+    method: "POST",
+    headers: authHeader(),
+    body: JSON.stringify(pokemon)
+  });
+
+  alert("Pokémon adicionado!");
+}
+</script>
+
+</body>
+</html>
